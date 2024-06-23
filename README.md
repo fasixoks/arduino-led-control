@@ -1,6 +1,8 @@
 # Arduino LED Control
 
 An Arduino-based LED control system with a Linux user-space application. This project enables control of an LED connected to an Arduino Uno via serial commands, allowing for turning the LED on/off, toggling, blinking with adjustable intervals, and reading the current state.
+# Screenshot
+![Capture](https://github.com/fasixoks/arduino-led-control/assets/126894089/87be760d-d169-4bab-bdbc-188bdd25adce)
 
 ## Features
 
@@ -46,4 +48,5 @@ sudo ./led_control toggle
 sudo ./led_control read
 sudo ./led_control blink 5
 sudo ./led_control set_interval 200
-sudo ./led_control get_interval```
+sudo ./led_control get_interval
+
