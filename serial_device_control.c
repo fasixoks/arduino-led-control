@@ -53,16 +53,19 @@ void set_blocking(int fd, int should_block) {
 }
 
 void print_usage(const char *progname) {
-    printf("Usage: %s <command>\n", progname);
+    printf("Usage: %s <command> [options]\n", progname);
     printf("Commands:\n");
-    printf("  on     - Turn the LED on\n");
-    printf("  off    - Turn the LED off\n");
-    printf("  toggle - Toggle the LED state\n");
-    printf("  read   - Read the LED state\n");
+    printf("  on                  - Turn the LED on\n");
+    printf("  off                 - Turn the LED off\n");
+    printf("  toggle              - Toggle the LED state\n");
+    printf("  read                - Read the LED state\n");
+    printf("  blink <count>       - Blink the LED specified number of times\n");
+    printf("  set_interval <ms>   - Set the blink interval in milliseconds\n");
+    printf("  get_interval        - Get the current blink interval\n");
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc < 2) {
         print_usage(argv[0]);
         return 1;
     }
@@ -77,15 +80,16 @@ int main(int argc, char *argv[]) {
     set_interface_attribs(fd, B9600); 
     set_blocking(fd, 0);              
 
-    const char *command = argv[1];
-    if (strcmp(command, "on") == 0) {
-        write(fd, "1", 1);
-    } else if (strcmp(command, "off") == 0) {
-        write(fd, "0", 1);
-    } else if (strcmp(command, "toggle") == 0) {
-        write(fd, "t", 1);
-    } else if (strcmp(command, "read") == 0) {
-        write(fd, "r", 1);
+    char command[256];
+    if (strcmp(argv[1], "on") == 0) {
+        snprintf(command, sizeof(command), "on\n");
+    } else if (strcmp(argv[1], "off") == 0) {
+        snprintf(command, sizeof(command), "off\n");
+    } else if (strcmp(argv[1], "toggle") == 0) {
+        snprintf(command, sizeof(command), "toggle\n");
+    } else if (strcmp(argv[1], "read") == 0) {
+        snprintf(command, sizeof(command), "read\n");
+        write(fd, command, strlen(command));
         sleep(1); 
         char buf[1];
         int n = read(fd, buf, sizeof buf);
@@ -100,10 +104,43 @@ int main(int argc, char *argv[]) {
         } else {
             printf("Failed to read LED state\n");
         }
+        close(fd);
+        return 0;
+    } else if (strcmp(argv[1], "blink") == 0) {
+        if (argc < 3) {
+            print_usage(argv[0]);
+            close(fd);
+            return 1;
+        }
+        snprintf(command, sizeof(command), "blink %s\n", argv[2]);
+    } else if (strcmp(argv[1], "set_interval") == 0) {
+        if (argc < 3) {
+            print_usage(argv[0]);
+            close(fd);
+            return 1;
+        }
+        snprintf(command, sizeof(command), "set_interval %s\n", argv[2]);
+    } else if (strcmp(argv[1], "get_interval") == 0) {
+        snprintf(command, sizeof(command), "get_interval\n");
+        write(fd, command, strlen(command));
+        sleep(1); 
+        char buf[256];
+        int n = read(fd, buf, sizeof buf - 1);
+        if (n > 0) {
+            buf[n] = 0; 
+            printf("Current blink interval: %s ms\n", buf);
+        } else {
+            printf("Failed to get blink interval\n");
+        }
+        close(fd);
+        return 0;
     } else {
         print_usage(argv[0]);
+        close(fd);
+        return 1;
     }
 
+    write(fd, command, strlen(command));
     close(fd);
     return 0;
 }
