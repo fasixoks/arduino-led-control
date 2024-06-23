@@ -6,6 +6,9 @@
 #include <errno.h>
 #include <termios.h>
 
+#define PORTNAME "/dev/ttyACM0" // Change this to your port 
+#define BAUDRATE B9600
+
 int set_interface_attribs(int fd, int speed) {
     struct termios tty;
     if (tcgetattr(fd, &tty) != 0) {
@@ -70,15 +73,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    const char *portname = "/dev/ttyACM0"; // Change this to your port
-    int fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
+    int fd = open(PORTNAME, O_RDWR | O_NOCTTY | O_SYNC);
     if (fd < 0) {
         perror("open");
         return -1;
     }
 
-    set_interface_attribs(fd, B9600); 
-    set_blocking(fd, 0);              
+    set_interface_attribs(fd, BAUDRATE);
+    set_blocking(fd, 0);
 
     char command[256];
     if (strcmp(argv[1], "on") == 0) {

@@ -1,28 +1,31 @@
+#define LED_PIN 13
+
 char ledState = '0'; // Initial state: LED off
 unsigned long blinkInterval = 500; // Default blink interval in milliseconds
 int blinkCount = 0; // Number of times to blink
 
 void setup() {
-  pinMode(13, OUTPUT); // LED on pin 13
-  digitalWrite(13, LOW); // Ensure LED is off
+  pinMode(LED_PIN, OUTPUT); // LED on pin 13
+  digitalWrite(LED_PIN, LOW); // Ensure LED is off
   Serial.begin(9600);  // Start serial communication at 9600 baud
 }
 
 void loop() {
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n'); // Read the incoming command
+
     if (command.startsWith("on")) {
-      digitalWrite(13, HIGH); // Turn the LED on
+      digitalWrite(LED_PIN, HIGH); // Turn the LED on
       ledState = '1';
     } else if (command.startsWith("off")) {
-      digitalWrite(13, LOW);  // Turn the LED off
+      digitalWrite(LED_PIN, LOW);  // Turn the LED off
       ledState = '0';
     } else if (command.startsWith("toggle")) {
       if (ledState == '0') {
-        digitalWrite(13, HIGH);
+        digitalWrite(LED_PIN, HIGH);
         ledState = '1';
       } else {
-        digitalWrite(13, LOW);
+        digitalWrite(LED_PIN, LOW);
         ledState = '0';
       }
     } else if (command.startsWith("read")) {
@@ -36,11 +39,10 @@ void loop() {
     }
   }
 
-  // Handle blinking
   if (blinkCount > 0) {
-    digitalWrite(13, HIGH);
+    digitalWrite(LED_PIN, HIGH);
     delay(blinkInterval);
-    digitalWrite(13, LOW);
+    digitalWrite(LED_PIN, LOW);
     delay(blinkInterval);
     blinkCount--;
   }
