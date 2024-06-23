@@ -35,9 +35,11 @@ An Arduino-based LED control system with a Linux user-space application. This pr
    ```sh
    git clone https://github.com/YOUR_USERNAME/arduino-led-control.git
    cd arduino-led-control
+   
 2. Compile the C program:
 ```gcc -o led_control src/led_control.c
-3. Run the application with the desired command
+
+3. Run the application with the desired command:
 ```sudo ./led_control on
 sudo ./led_control off
 sudo ./led_control toggle
